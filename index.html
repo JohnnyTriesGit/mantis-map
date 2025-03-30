@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Mantis Deployment Map</title>
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+    #chartdiv {
+      width: 100%;
+      height: 100vh;
+    }
+  </style>
+  <!-- amCharts libraries -->
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+</head>
+<body>
+  <div id="chartdiv"></div>
+
+  <script>
+    am5.ready(function () {
+      var root = am5.Root.new("chartdiv");
+
+      root.setThemes([am5themes_Animated.new(root)]);
+
+      var chart = root.container.children.push(
+        am5map.MapChart.new(root, {
+          panX: "translateX",
+          panY: "translateY",
+          wheelX: "zoomX",
+          wheelY: "zoomY",
+          projection: am5map.geoMercator()
+        })
+      );
+
+      chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
+
+      var polygonSeries = chart.series.push(
+        am5map.MapPolygonSeries.new(root, {
+          geoJSON: am5geodata_worldLow,
+          exclude: ["AQ"]
+        })
+      );
+
+      polygonSeries.mapPolygons.template.setAll({
+        tooltipText: "{name}",
+        interactive: true
+      });
+
+      polygonSeries.mapPolygons.template.states.create("hover", {
+        fill: am5.color(0x677935)
+      });
+
+      const deployedCountries = [
+        { id: "US", name: "United States" },
+        { id: "CA", name: "Canada" },
+        { id: "MX", name: "Mexico" },
+        { id: "TT", name: "Trinidad and Tobago" },
+        { id: "IT", name: "Italy" },
+        { id: "FR", name: "France" },
+        { id: "NL", name: "Netherlands" },
+        { id: "PL", name: "Poland" },
+        { id: "MY", name: "Malaysia" },
+        { id: "AZ", name: "Azerbaijan" },
+        { id: "OM", name: "Oman" },
+        { id: "QA", name: "Qatar" },
+        { id: "NO", name: "Norway" },
+        { id: "GB", name: "United Kingdom" },
+        { id: "AO", name: "Angola" },
+        { id: "GH", name: "Ghana" },
+        { id: "NG", name: "Nigeria" },
+        { id: "EG", name: "Egypt" },
+        { id: "CD", name: "Congo (Kinshasa)" },
+        { id: "AU", name: "Australia" }
+      ];
+
+      polygonSeries.mapPolygons.each(function (polygon) {
+        const match = deployedCountries.find(c => c.id === polygon.dataItem.dataContext.id);
+        if (match) {
+          polygon.setAll({
+            fill: am5.color(0xcf4520),
+            tooltipText: `${match.name}\nDeployed: Mantis / Mantis Lite`
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
