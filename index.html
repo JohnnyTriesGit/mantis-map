@@ -81,14 +81,17 @@
         { id: "AU", name: "Australia" }
       ];
 
-      polygonSeries.mapPolygons.each(function (polygon) {
-        const match = deployedCountries.find(c => c.id === polygon.dataItem.dataContext.id);
-        if (match) {
-          polygon.setAll({
-            fill: am5.color(0xcf4520),
-            tooltipText: `${match.name}\nDeployed: Mantis / Mantis Lite`
-          });
-        }
+      // 🛠 Wait until polygons are fully initialized
+      polygonSeries.events.once("inited", function () {
+        polygonSeries.mapPolygons.each(function (polygon) {
+          const match = deployedCountries.find(c => c.id === polygon.dataItem.dataContext.id);
+          if (match) {
+            polygon.setAll({
+              fill: am5.color(0xcf4520),
+              tooltipText: `${match.name}\nDeployed: Mantis / Mantis Lite`
+            });
+          }
+        });
       });
     });
   </script>
