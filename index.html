@@ -15,7 +15,6 @@
       height: 100vh;
     }
   </style>
-  <!-- amCharts libraries -->
   <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
   <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
   <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
@@ -27,7 +26,6 @@
   <script>
     am5.ready(function () {
       var root = am5.Root.new("chartdiv");
-
       root.setThemes([am5themes_Animated.new(root)]);
 
       var chart = root.container.children.push(
@@ -42,56 +40,36 @@
 
       chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
 
+      const deployedCountryIds = [
+        "US", "CA", "MX", "TT", "IT", "FR", "NL", "PL", "MY",
+        "AZ", "OM", "QA", "NO", "GB", "AO", "GH", "NG", "EG", "CD", "AU"
+      ];
+
       var polygonSeries = chart.series.push(
         am5map.MapPolygonSeries.new(root, {
           geoJSON: am5geodata_worldLow,
-          exclude: ["AQ"]
+          exclude: ["AQ"],
+          include: deployedCountryIds,
+          valueField: "value"
         })
       );
 
       polygonSeries.mapPolygons.template.setAll({
-        tooltipText: "{name}",
-        interactive: true
+        tooltipText: "{name}\nDeployed: Mantis / Mantis Lite",
+        interactive: true,
+        fill: am5.color(0xcf4520)
       });
 
-      polygonSeries.mapPolygons.template.states.create("hover", {
-        fill: am5.color(0x677935)
-      });
+      // Add a base series underneath (in light gray)
+      var backgroundSeries = chart.series.push(
+        am5map.MapPolygonSeries.new(root, {
+          geoJSON: am5geodata_worldLow,
+          exclude: ["AQ"],
+        })
+      );
 
-      const deployedCountries = [
-        { id: "US", name: "United States" },
-        { id: "CA", name: "Canada" },
-        { id: "MX", name: "Mexico" },
-        { id: "TT", name: "Trinidad and Tobago" },
-        { id: "IT", name: "Italy" },
-        { id: "FR", name: "France" },
-        { id: "NL", name: "Netherlands" },
-        { id: "PL", name: "Poland" },
-        { id: "MY", name: "Malaysia" },
-        { id: "AZ", name: "Azerbaijan" },
-        { id: "OM", name: "Oman" },
-        { id: "QA", name: "Qatar" },
-        { id: "NO", name: "Norway" },
-        { id: "GB", name: "United Kingdom" },
-        { id: "AO", name: "Angola" },
-        { id: "GH", name: "Ghana" },
-        { id: "NG", name: "Nigeria" },
-        { id: "EG", name: "Egypt" },
-        { id: "CD", name: "Congo (Kinshasa)" },
-        { id: "AU", name: "Australia" }
-      ];
-
-      // 🛠 Wait until polygons are fully initialized
-      polygonSeries.events.once("inited", function () {
-        polygonSeries.mapPolygons.each(function (polygon) {
-          const match = deployedCountries.find(c => c.id === polygon.dataItem.dataContext.id);
-          if (match) {
-            polygon.setAll({
-              fill: am5.color(0xcf4520),
-              tooltipText: `${match.name}\nDeployed: Mantis / Mantis Lite`
-            });
-          }
-        });
+      backgroundSeries.mapPolygons.template.setAll({
+        fill: am5.color(0xdcdcdc)
       });
     });
   </script>
