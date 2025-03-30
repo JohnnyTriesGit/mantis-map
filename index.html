@@ -13,6 +13,15 @@
     #chartdiv {
       width: 100%;
       height: 100vh;
+      position: relative;
+    }
+    #logo {
+      position: absolute;
+      bottom: 20px;
+      right: 20px;
+      width: 160px;
+      opacity: 0.9;
+      z-index: 10;
     }
   </style>
   <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
@@ -21,7 +30,9 @@
   <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 </head>
 <body>
-  <div id="chartdiv"></div>
+  <div id="chartdiv">
+    <img src="Mantis_color.png" id="logo" alt="Mantis Logo">
+  </div>
 
   <script>
     am5.ready(function () {
@@ -45,11 +56,10 @@
         "AZ", "OM", "QA", "NO", "GB", "AO", "GH", "NG", "EG", "CD", "AU", "KR"
       ];
 
-      // First, render all countries in gray
       var backgroundSeries = chart.series.push(
         am5map.MapPolygonSeries.new(root, {
           geoJSON: am5geodata_worldLow,
-          exclude: ["AQ"],
+          exclude: ["AQ"]
         })
       );
 
@@ -58,11 +68,10 @@
         stroke: am5.color(0x999999)
       });
 
-      // Now render just the deployed countries on top, in orange
       var highlightSeries = chart.series.push(
         am5map.MapPolygonSeries.new(root, {
           geoJSON: am5geodata_worldLow,
-          include: deployedCountryIds,
+          include: deployedCountryIds
         })
       );
 
