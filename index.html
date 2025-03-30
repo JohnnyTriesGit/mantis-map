@@ -45,22 +45,7 @@
         "AZ", "OM", "QA", "NO", "GB", "AO", "GH", "NG", "EG", "CD", "AU"
       ];
 
-      var polygonSeries = chart.series.push(
-        am5map.MapPolygonSeries.new(root, {
-          geoJSON: am5geodata_worldLow,
-          exclude: ["AQ"],
-          include: deployedCountryIds,
-          valueField: "value"
-        })
-      );
-
-      polygonSeries.mapPolygons.template.setAll({
-        tooltipText: "{name}\nDeployed: Mantis / Mantis Lite",
-        interactive: true,
-        fill: am5.color(0xcf4520)
-      });
-
-      // Add a base series underneath (in light gray)
+      // First, render all countries in gray
       var backgroundSeries = chart.series.push(
         am5map.MapPolygonSeries.new(root, {
           geoJSON: am5geodata_worldLow,
@@ -69,7 +54,26 @@
       );
 
       backgroundSeries.mapPolygons.template.setAll({
-        fill: am5.color(0xdcdcdc)
+        fill: am5.color(0xdcdcdc),
+        stroke: am5.color(0x999999)
+      });
+
+      // Now render just the deployed countries on top, in orange
+      var highlightSeries = chart.series.push(
+        am5map.MapPolygonSeries.new(root, {
+          geoJSON: am5geodata_worldLow,
+          include: deployedCountryIds,
+        })
+      );
+
+      highlightSeries.mapPolygons.template.setAll({
+        fill: am5.color(0xcf4520),
+        tooltipText: "{name}\nDeployed: Mantis / Mantis Lite",
+        interactive: true
+      });
+
+      highlightSeries.mapPolygons.template.states.create("hover", {
+        fill: am5.color(0xa83815)
       });
     });
   </script>
